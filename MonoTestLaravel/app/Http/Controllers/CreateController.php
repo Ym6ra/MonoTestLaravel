@@ -14,23 +14,9 @@ use App\Models\Auto;
 
 class CreateController extends Controller
 {
-    //public function index(){
-    //    $clients = DB::table('clients')->paginate(3);
-    //    return view('home', ['data' => $clients]);
-    //}
-
-
-
-
     public function submitClient(CreateClientRequest $req)
     {
-        //$client = new Client();
-        //$client->name = $req->input('name');
-        //$client->gender = $req->input('gender');
-        //$client->phone = $req->input('phone');
-        //$client->address = $req->input('address');
-        //$client->cars = 1;
-        //$client->save();
+
         $client =  DB::table('clients')->insertGetId([
             'name' => htmlspecialchars($req->input('name')),
             'gender' => htmlspecialchars($req->input('gender')),
@@ -63,7 +49,7 @@ class CreateController extends Controller
     {
         $client = DB::table('clients')->where('id', $id)->get();
         $autos = DB::table('autos')->where('client_id', $id)->get();
-        dd($autos);
+        //dd($autos);
         return view('createAuto',['client' => $client]);
     }
     public function ClientAllData($currentPage)
@@ -75,39 +61,42 @@ class CreateController extends Controller
         }
         $take = 3;
         $skip = ($page - 1) * $take;
-
+        $allClients = DB::table('clients')->get();
         $clients = DB::table('clients')
                         ->skip($skip)
                         ->take($take)
                         ->get();
+        if (count($allClients)){
+            $clientsId = DB::table('clients')
+            ->skip($skip)
+            ->take($take)
+            ->select('id')
+            ->orderBy('id')
+            ->get();
 
-        $clientsId = DB::table('clients')
-                        ->skip($skip)
-                        ->take($take)
-                        ->select('id')
-                        ->orderBy('id')
-                        ->get();
+            $clientsPerPage = $clients->count();
 
-        $clientsPerPage = $clients->count();
-
-        for ($i = 0; $i < $clientsPerPage; $i++) {
+            for ($i = 0; $i < $clientsPerPage; $i++) {
             $auto = DB::table('autos')
                 ->orderBy('client_id')
                 ->where('client_id', $clientsId[$i]->id)
                 ->get();
             $autos[$i] = $auto;
             $autosPerClient[$i] = $auto->count();
-        }
+            }
 
-        $pages = ceil(DB::table('clients')->count()/ $take);
-        $val =[
+            $pages = ceil(DB::table('clients')->count()/ $take);
+            $val =[
             'pages'=> $pages,
             'page'=>$page,
             'clientsPerPage'=> $clientsPerPage,
             'autosPerClient'=> $autosPerClient,
             'autos'=>$autos
-        ];
-        return view('home', ['data' => $clients], ['val'=>$val]);
+            ];
+            return view('home', ['data' => $clients], ['val'=>$val]);
+        }else{
+            return view('home', ['data' => null], ['val'=>null]);
+        }
     }
     public function oneClient($id){
         $client = DB::table('clients')

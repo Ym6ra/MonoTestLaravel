@@ -20,7 +20,7 @@ Route::get('/',Function(){
 Route::get('/page/{currentPage}', 'App\Http\Controllers\CreateController@ClientAllData')->name('AllData');
 
 Route::get('/createClient', function () {
-    return view('createСlient');
+    return view('createClient');
 })->name('createClient');
 
 Route::get('/statistic', 'App\Http\Controllers\CreateController@statistic')->name('statistic');

@@ -25,6 +25,7 @@
     </tr>
     </thead>
     <tbody>
+    @if ($data)
     @foreach ($data as $client)
     <tr>
         <td class="text-center">
@@ -34,11 +35,8 @@
         </td>
         <td class="text-center">
             @for ($i = 0; $i <= $val['clientsPerPage']-1; $i++)
-                        {{--{{$val['autos'][$i]}}--}}
                 @for ($a = 0; $a <= $val['autosPerClient'][$i]-1; $a++)
-                        {{--{{$val['autos'][$i][$a]->client_id}}--}}
                     @if ($client->id == $val['autos'][$i][$a]->client_id)
-                        {{--{{$val['autos'][$i][$a]->client_id}}--}}
                         <form action="{{route('updateStatus',$val['autos'][$i][$a]->id)}} " method="post">
                         @csrf
                         @if ($val['autos'][$i][$a]->status == 'Присутствует')
@@ -72,8 +70,16 @@
         </td>
     </tr>
     @endforeach
+    @else
+    <tr>
+        <td>
+            Пока клиентов нет, добавьте нового
+        </td>
+    </tr>
+    @endif
     </tbody>
 </table>
+@if ($data)
 <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-center">
         {{--{{$pages['pages']}}--}}
@@ -88,6 +94,7 @@
         @endfor
     </ul>
 </nav>
+@endif
 
 
 
